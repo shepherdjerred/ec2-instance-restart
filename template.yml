@@ -1,28 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
+
 Transform: 'AWS::Serverless-2016-10-31'
 Description: An AWS Serverless Specification template describing your function.
 Resources:
-  LambdaExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      Policies:
-        PolicyName: "RestartEc2InstanceLambda"
-        PolicyDocument:
-          Version: 2012-10-19
-          Statement:
-            - Effect: Allow
-              Action: "logs:CreateLogGroup"
-              Resource: "arn:aws:logs:us-east-1:692594597524:*"
-            - Effect: Allow
-              Action:
-              - "logs:CreateLogStream"
-              - "logs:PutLogEvents"
-              Resource: "arn:aws:logs:us-east-1:692594597524:log-group:*"
-            - Effect: Allow
-              Action:
-              - "ec2:StartInstances"
-              - "ec2:StopInstances"
-              Resource: "arn:aws:ec2:us-east-1:692594597524:instance/i-0784bddc3df66775a"
   StopEc2InstanceLambda:
     Type: 'AWS::Serverless::Function'
     Properties:
@@ -33,9 +13,16 @@ Resources:
       MemorySize: 128
       Timeout: 5
       Environment:
-        INSTANCEID: i-0784bddc3df66775a
-      Role:
-        Ref: LambdaExecutionRole
+        Variables:
+          INSTANCE_ID: i-0784bddc3df66775a
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            -
+              Effect: Allow
+              Action:
+                - "ec2:StopInstances"
+              Resource: "arn:aws:ec2:us-east-1:692594597524:instance/i-0784bddc3df66775a"
       Events:
         HttpApiEventSource:
           Type: HttpApi
@@ -54,9 +41,16 @@ Resources:
       MemorySize: 128
       Timeout: 5
       Environment:
-        INSTANCEID: i-0784bddc3df66775a
-      Role:
-        Ref: LambdaExecutionRole
+        Variables:
+          INSTANCE_ID: i-0784bddc3df66775a
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            -
+              Effect: Allow
+              Action:
+                - "ec2:StartInstances"
+              Resource: "arn:aws:ec2:us-east-1:692594597524:instance/i-0784bddc3df66775a"
       Events:
         HttpApiEventSource:
           Type: HttpApi

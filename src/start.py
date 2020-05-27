@@ -4,7 +4,7 @@ import os
 
 region = "us-east-1"
 
-instances = [os.environ["INSTANCEID"]]
+instances = [os.environ["INSTANCE_ID"]]
 secret = "SECRET"
 
 def handler(event, context):
