@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+Resources:
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Policies:
+        PolicyName: "RestartEc2InstanceLambda"
+        PolicyDocument:
+          Version: 2012-10-19
+          Statement:
+            - Effect: Allow
+              Action: "logs:CreateLogGroup"
+              Resource: "arn:aws:logs:us-east-1:692594597524:*"
+            - Effect: Allow
+              Action:
+              - "logs:CreateLogStream"
+              - "logs:PutLogEvents"
+              Resource: "arn:aws:logs:us-east-1:692594597524:log-group:*"
+            - Effect: Allow
+              Action:
+              - "ec2:StartInstances"
+              - "ec2:StopInstances"
+              Resource: "arn:aws:ec2:us-east-1:692594597524:instance/i-0784bddc3df66775a"
+  StopEc2InstanceLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: StopEc2Instance
+      CodeUri: src/
+      Handler: stop.handler
+      Runtime: python3.8
+      MemorySize: 128
+      Timeout: 5
+      Environment:
+        INSTANCEID: i-0784bddc3df66775a
+      Role:
+        Ref: LambdaExecutionRole
+      Events:
+        HttpApiEventSource:
+          Type: HttpApi
+          Properties:
+            Path: /stop
+            Method: POST
+            ApiId:
+              Ref: HttpApi
+  StartEc2InstanceLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: StartEc2Instance
+      CodeUri: src/
+      Handler: start.handler
+      Runtime: python3.8
+      MemorySize: 128
+      Timeout: 5
+      Environment:
+        INSTANCEID: i-0784bddc3df66775a
+      Role:
+        Ref: LambdaExecutionRole
+      Events:
+        HttpApiEventSource:
+          Type: HttpApi
+          Properties:
+            Path: /start
+            Method: POST
+            ApiId:
+              Ref: HttpApi
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Domain:
+        CertificateArn: arn:aws:acm:us-east-1:692594597524:certificate/6f827781-9221-4818-9ff6-83a31817a1e0
+        DomainName: instance-api.shepherdjerred.com
+        Route53:
+          HostedZoneId: Z24MJMG74F2S94
+          IpV6: true
