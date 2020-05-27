@@ -4,16 +4,43 @@ import os
 
 region = "us-east-1"
 
-instances = [os.environ["INSTANCE_ID"]]
-secret = "SECRET"
+instance = os.environ["INSTANCE_ID"]
+secret = os.environ["SECRET"]
+
 
 def handler(event, context):
-    request_secret = json.loads(event.get("body")).get("secret")
-    if secret != request_secret:
-        return json.dumps({ "message": "Authentication failed", "dump": event })
+    if "body" not in event:
+        return json.dumps({
+            "statusCode": 400,
+            "body": "Bad request."
+        })
 
-    ec2_client = boto3.client("ec2", region_name=region)
-    ec2_client.start_instances(InstanceIds=instances)
+    json_body = json.loads(event["body"])
+    if "secret" not in json_body:
+        return json_body({
+            "statusCode": 401,
+            "body": "No secret sent."
+        })
 
-    print(f"Started instances {str(instances)}")
-    return json.dumps({ "message": "Instance Started" })
+    if secret != json_body["secret"]:
+        return json.dumps({
+            "statusCode": 401,
+            "body": "Authentication failed."
+        })
+
+    try:
+        ec2_client = boto3.client("ec2", region_name=region)
+        ec2_client.start_instances(InstanceIds=[instance])
+    except Exception as e:
+        return json.dumps({
+            "statusCode": 500,
+            "body": {
+                "message": "Error when starting instance",
+                "details": str(e)
+            }
+        })
+
+    return json.dumps({
+        "statusCode": 200,
+        "body": f"Instance {instance} Started"
+    })
