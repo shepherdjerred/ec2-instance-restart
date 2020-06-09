@@ -77,6 +77,41 @@ Resources:
             Method: POST
             ApiId:
               Ref: HttpApi
+  GetEc2InstanceStatusLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: GetEc2InstanceStatus
+      CodeUri: src/
+      Handler: status.handler
+      Runtime: python3.8
+      MemorySize: 128
+      Timeout: 5
+      Environment:
+        Variables:
+          INSTANCE_ID:
+            Ref: InstanceId
+          SECRET:
+            Ref: Secret
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            -
+              Effect: Allow
+              Action:
+                - "ec2:DescribeInstanceStatus"
+              Resource:
+                Fn::Join:
+                  - ""
+                  - - "arn:aws:ec2:us-east-1:692594597524:instance/"
+                    - Ref: InstanceId
+      Events:
+        HttpApiEventSource:
+          Type: HttpApi
+          Properties:
+            Path: /start
+            Method: POST
+            ApiId:
+              Ref: HttpApi
   HttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
