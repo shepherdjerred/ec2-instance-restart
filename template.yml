@@ -108,7 +108,7 @@ Resources:
         HttpApiEventSource:
           Type: HttpApi
           Properties:
-            Path: /start
+            Path: /status
             Method: POST
             ApiId:
               Ref: HttpApi
