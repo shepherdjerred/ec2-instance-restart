@@ -99,11 +99,7 @@ Resources:
               Effect: Allow
               Action:
                 - "ec2:DescribeInstanceStatus"
-              Resource:
-                Fn::Join:
-                  - ""
-                  - - "arn:aws:ec2:us-east-1:692594597524:instance/"
-                    - Ref: InstanceId
+              Resource: "*"
       Events:
         HttpApiEventSource:
           Type: HttpApi
@@ -115,6 +111,11 @@ Resources:
   HttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
+      CorsConfiguration:
+        AllowHeaders: "*"
+        AllowMethods: "*"
+        AllowOrigins: "*"
+        ExposeHeaders: "*"
       Domain:
         CertificateArn: arn:aws:acm:us-east-1:692594597524:certificate/6f827781-9221-4818-9ff6-83a31817a1e0
         DomainName: instance-api.shepherdjerred.com

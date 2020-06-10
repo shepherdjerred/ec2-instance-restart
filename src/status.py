@@ -29,20 +29,22 @@ def handler(event, context):
         })
 
     try:
+        print(instance)
         ec2_client = boto3.client("ec2", region_name=region)
         status = ec2_client.describe_instance_status(
             InstanceIds=[
                 instance,
             ],
-            MaxResults=1,
             DryRun=False,
-            IncludeAllInstances=False
-        )[0]["InstanceState"]
+            IncludeAllInstances=True
+        )
+        print(status)
+        status = status["InstanceStatuses"][0]["InstanceState"]["Name"]
     except Exception as e:
         return json.dumps({
             "statusCode": 500,
             "body": {
-                "message": "Error when stopping instance",
+                "message": "Error when getting instance status",
                 "details": str(e)
             }
         })
