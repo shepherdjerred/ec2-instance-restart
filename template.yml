@@ -6,6 +6,8 @@ Parameters:
     Type: AWS::EC2::Instance::Id
   Secret:
     Type: String
+  Subdomain:
+    Type: String
 Resources:
   StopEc2InstanceLambda:
     Type: 'AWS::Serverless::Function'
@@ -15,7 +17,7 @@ Resources:
       Handler: stop.handler
       Runtime: python3.8
       MemorySize: 128
-      Timeout: 5
+      Timeout: 60
       Environment:
         Variables:
           INSTANCE_ID:
@@ -50,7 +52,7 @@ Resources:
       Handler: start.handler
       Runtime: python3.8
       MemorySize: 128
-      Timeout: 5
+      Timeout: 60
       Environment:
         Variables:
           INSTANCE_ID:
@@ -85,7 +87,7 @@ Resources:
       Handler: status.handler
       Runtime: python3.8
       MemorySize: 128
-      Timeout: 5
+      Timeout: 60
       Environment:
         Variables:
           INSTANCE_ID:
@@ -118,7 +120,11 @@ Resources:
         ExposeHeaders: "*"
       Domain:
         CertificateArn: arn:aws:acm:us-east-1:692594597524:certificate/6f827781-9221-4818-9ff6-83a31817a1e0
-        DomainName: instance-api.shepherdjerred.com
+        DomainName:
+          Fn::Join:
+            - ""
+            - - Ref: Subdomain
+              - ".shepherdjerred.com"
         Route53:
           HostedZoneId: Z24MJMG74F2S94
           IpV6: true
