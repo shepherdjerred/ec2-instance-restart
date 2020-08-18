@@ -2,10 +2,6 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 Description: An AWS Serverless Specification template describing your function.
 Parameters:
-  InstanceId:
-    Type: AWS::EC2::Instance::Id
-  Secret:
-    Type: String
   Subdomain:
     Type: String
 Resources:
@@ -17,25 +13,7 @@ Resources:
       Handler: stop.handler
       Runtime: python3.8
       MemorySize: 128
-      Timeout: 60
-      Environment:
-        Variables:
-          INSTANCE_ID:
-            Ref: InstanceId
-          SECRET:
-            Ref: Secret
-      Policies:
-        - Version: "2012-10-17"
-          Statement:
-            -
-              Effect: Allow
-              Action:
-                - "ec2:StopInstances"
-              Resource:
-                Fn::Join:
-                  - ""
-                  - - "arn:aws:ec2:us-east-1:692594597524:instance/"
-                    - Ref: InstanceId
+      Timeout: 30
       Events:
         HttpApiEventSource:
           Type: HttpApi
@@ -52,25 +30,7 @@ Resources:
       Handler: start.handler
       Runtime: python3.8
       MemorySize: 128
-      Timeout: 60
-      Environment:
-        Variables:
-          INSTANCE_ID:
-            Ref: InstanceId
-          SECRET:
-            Ref: Secret
-      Policies:
-        - Version: "2012-10-17"
-          Statement:
-            -
-              Effect: Allow
-              Action:
-                - "ec2:StartInstances"
-              Resource:
-                Fn::Join:
-                  - ""
-                  - - "arn:aws:ec2:us-east-1:692594597524:instance/"
-                    - Ref: InstanceId
+      Timeout: 30
       Events:
         HttpApiEventSource:
           Type: HttpApi
@@ -87,21 +47,7 @@ Resources:
       Handler: status.handler
       Runtime: python3.8
       MemorySize: 128
-      Timeout: 60
-      Environment:
-        Variables:
-          INSTANCE_ID:
-            Ref: InstanceId
-          SECRET:
-            Ref: Secret
-      Policies:
-        - Version: "2012-10-17"
-          Statement:
-            -
-              Effect: Allow
-              Action:
-                - "ec2:DescribeInstanceStatus"
-              Resource: "*"
+      Timeout: 30
       Events:
         HttpApiEventSource:
           Type: HttpApi
