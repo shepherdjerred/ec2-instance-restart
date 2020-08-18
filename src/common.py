@@ -56,7 +56,7 @@ def handle_request(event, operation):
     try:
         if operation == Operation.START:
             ec2_client.start_instances(InstanceIds=[instance_id])
-            return create_response(200, f"Instance {instance_id} Stopped")
+            return create_response(200, f"Instance {instance_id} Started")
         elif operation == Operation.STOP:
             ec2_client.stop_instances(InstanceIds=[instance_id])
             return create_response(200, f"Instance {instance_id} Stopped")
