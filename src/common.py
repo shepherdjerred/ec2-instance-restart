@@ -2,6 +2,8 @@ import json
 
 import boto3
 from jsonschema import validate
+from discord_webhook import DiscordWebhook
+import os
 
 from operation import Operation
 from request import Request
@@ -43,6 +45,16 @@ def convert_json(json_string):
     return Request(json_body["instance_id"], json_body["region"],
                    json_body["aws_access_key_id"],
                    json_body["aws_secret_access_key"], )
+
+
+def send_notification(request, operation):
+    if operation == Operation.LIST:
+        return
+    webhook_url = os.environ['WEBHOOK_URL']
+    message = f"Instance {request.instance_id} has been {operation}"
+    webhook = DiscordWebhook(url=webhook_url, content=message)
+    response = webhook.execute()
+    print(response)
 
 
 def handle_request(event, operation):

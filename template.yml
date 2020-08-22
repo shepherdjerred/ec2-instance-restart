@@ -4,6 +4,8 @@ Description: An AWS Serverless Specification template describing your function.
 Parameters:
   Subdomain:
     Type: String
+  DiscordWebhookUrl:
+    Type: String
 Resources:
   StopEc2InstanceLambda:
     Type: 'AWS::Serverless::Function'
@@ -22,6 +24,10 @@ Resources:
             Method: POST
             ApiId:
               Ref: HttpApi
+      Environment:
+        Variables:
+          WEBHOOK_URL:
+            Ref: DiscordWebhookUrl
   StartEc2InstanceLambda:
     Type: 'AWS::Serverless::Function'
     Properties:
@@ -39,6 +45,10 @@ Resources:
             Method: POST
             ApiId:
               Ref: HttpApi
+      Environment:
+        Variables:
+          WEBHOOK_URL:
+            Ref: DiscordWebhookUrl
   GetEc2InstanceStatusLambda:
     Type: 'AWS::Serverless::Function'
     Properties:
