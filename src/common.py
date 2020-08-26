@@ -48,13 +48,31 @@ def convert_json(json_string):
 
 
 def send_notification(request, operation):
-    if operation == Operation.LIST:
-        return
     webhook_url = os.environ['WEBHOOK_URL']
-    message = f"Instance {request.instance_id} has been {operation}"
+
+    if operation == Operation.START:
+        verb = "started"
+    elif operation == Operation.STOP:
+        verb = "stopped"
+    else:
+        return
+
+    alias = get_instance_alias(request.instance_id)
+
+    message = f"{alias} has been {verb}"
     webhook = DiscordWebhook(url=webhook_url, content=message)
     response = webhook.execute()
     print(response)
+
+
+# TODO: this should be removed and replaced with some sort of generic aliasing mechanic
+def get_instance_alias(instance_id):
+    if instance_id == "i-0745805b004ea5306":
+        return "factorio"
+    elif instance_id == "i-0784bddc3df66775a":
+        return "mercury"
+    else:
+        return instance_id
 
 
 def handle_request(event, operation):
@@ -68,9 +86,11 @@ def handle_request(event, operation):
     try:
         if operation == Operation.START:
             ec2_client.start_instances(InstanceIds=[instance_id])
+            send_notification(request, operation)
             return create_response(200, f"Instance {instance_id} Started")
         elif operation == Operation.STOP:
             ec2_client.stop_instances(InstanceIds=[instance_id])
+            send_notification(request, operation)
             return create_response(200, f"Instance {instance_id} Stopped")
         elif operation == Operation.LIST:
             status = ec2_client.describe_instance_status(
