@@ -71,6 +71,8 @@ def get_instance_alias(instance_id):
         return "factorio"
     elif instance_id == "i-0784bddc3df66775a":
         return "minecraft"
+    elif instance_id == "i-00bbb946281bd5baa":
+        return "among us
     else:
         return instance_id
 
