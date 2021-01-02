@@ -72,7 +72,7 @@ def get_instance_alias(instance_id):
     elif instance_id == "i-0784bddc3df66775a":
         return "minecraft"
     elif instance_id == "i-099322e02b2ddd8ba":
-        return "among us
+        return "among us"
     else:
         return instance_id
 
